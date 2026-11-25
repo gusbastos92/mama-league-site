@@ -22,6 +22,7 @@
 	<h1>MAMA League</h1>
 	<p id="estado">Procurando o servidor de hoje...</p>
 	<a id="jogar" class="botao" href="jogar.html" hidden>Jogar</a>
+	<a id="salvo" class="botao" href="#" hidden>Último servidor usado</a>
 	<a id="montar" class="botao" href="jogar.html?servidor=nenhum" hidden>Montar times</a>
 	<form id="manual">
 		<label for="endereco">Endereço do servidor de hoje</label>
@@ -55,13 +56,14 @@
 		return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 	}
 	function irPara(host) {
+		host = window.MamaServidor.normalizarHost(host);
+		if (!host) return;
 		location.href = 'jogar.html?servidor=' + encodeURIComponent(host);
 	}
 
 	form.addEventListener('submit', function (ev) {
 		ev.preventDefault();
-		var host = campo.value.trim();
-		if (host) irPara(host);
+		irPara(campo.value);
 	});
 
 	var busca = ANUNCIO_URL
@@ -75,9 +77,22 @@
 			salvo: salvo,
 			agora: Date.now()
 		});
+		if (s.origem === 'salvo' && query !== 'nenhum') {
+			estado.textContent = 'Não consegui ver o anúncio agora. Último servidor usado: ' + s.host;
+			jogar.textContent = 'Tentar o último servidor';
+			jogar.href = 'jogar.html?servidor=' + encodeURIComponent(s.host);
+			jogar.hidden = false;
+			return;
+		}
 		if (query === 'nenhum' || !s.host) {
 			estado.textContent = 'Nenhum servidor ligado agora';
 			montar.hidden = false;
+			var ultimo = window.MamaServidor.normalizarHost(salvo);
+			if (ultimo && /^[a-z0-9.-]+$/.test(ultimo)) {
+				var link = document.getElementById('salvo');
+				link.href = 'jogar.html?servidor=' + encodeURIComponent(ultimo);
+				link.hidden = false;
+			}
 			return;
 		}
 		if (s.origem === 'anuncio') {

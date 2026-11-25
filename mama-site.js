@@ -106,7 +106,8 @@ function montar(html, opcoes) {
 		var q = null, salvo = '', host = '';
 		try { q = new URLSearchParams(location.search).get('servidor'); } catch (e) {}
 		try { salvo = localStorage.getItem('mama_servidor') || ''; } catch (e) {}
-		host = q !== null ? q.trim() : salvo;
+		host = q !== null ? q : salvo;
+		host = String(host).trim().replace(/^https?:\\/\\//i, '').replace(/\\/.*$/, '').toLowerCase();
 		if (host === 'nenhum' || !/^[a-z0-9.-]+$/i.test(host)) host = '';
 		if (host) { try { localStorage.setItem('mama_servidor', host); } catch (e) {} }
 		Config.server = { id: '${MOD}', host: host || 'nenhum.invalid', port: 443, https: true, registered: false };
@@ -125,7 +126,7 @@ function montar(html, opcoes) {
 </script>`;
 	const antes = estatico ? antesEstatico : antesLocal;
 	const acaoJs = estatico ? "'https://' + Config.server.host + '/~~" + MOD + "/action.php'"
-		: "location.protocol + '//' + location.host + '/~~" + MOD + "/action.php'";
+	: "location.protocol + '//' + location.host + '/~~" + MOD + "/action.php'";
 	const login = `<script>
 	// sem servidor de login: o nome vai direto para o servidor (que está com noguestsecurity)
 	(function () {
