@@ -4,31 +4,123 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MAMA League · Servidor do dia</title>
+<meta name="theme-color" content="#c8102e" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet" />
 <style>
-	body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: #f4f5f7; color: #1d2330; }
-	main { max-width: 460px; margin: 0 auto; padding: 48px 16px; }
-	h1 { font-size: 28px; margin: 0 0 16px; }
-	#estado { font-size: 17px; line-height: 1.4; margin: 0 0 20px; }
-	.botao { display: inline-block; background: #2f6fd6; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-size: 16px; margin: 0 8px 12px 0; }
+	:root {
+		--casca: #c8102e; --casca-escura: #8f0a20; --casca-clara: #e8344d;
+		--lente: #2a9df4; --lcd: #9bbc0f; --lcd-escuro: #0f380f; --lcd-medio: #306230;
+		--tinta: #1b1b24; --papel: #fff7e8; --amarelo: #ffcb05; --azul: #3466af;
+	}
+	* { box-sizing: border-box; }
+	html { background: #1b1b24; }
+	body {
+		margin: 0; min-height: 100vh; color: var(--tinta);
+		font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		background:
+			radial-gradient(circle at 15% 10%, rgba(255,255,255,.16), transparent 40%),
+			radial-gradient(rgba(255,255,255,.09) 1.5px, transparent 1.6px) 0 0 / 22px 22px,
+			linear-gradient(160deg, #e23b3b 0%, #b3122b 55%, #6b0716 100%);
+		display: flex; position: relative; overflow-x: hidden; align-items: center; justify-content: center; padding: 24px 16px;
+	}
+	/* pokébola grande e suave atrás da Pokédex */
+	body::before {
+		content: ''; position: fixed; width: 760px; height: 760px; right: -220px; bottom: -260px; border-radius: 50%; opacity: .1; pointer-events: none;
+		background:
+			radial-gradient(circle, #fff 0 70px, #000 70px 105px, transparent 105px),
+			linear-gradient(#fff 0 46%, #000 46% 54%, transparent 54%);
+		-webkit-mask: radial-gradient(circle, #000 0 69.5%, transparent 70%); mask: radial-gradient(circle, #000 0 69.5%, transparent 70%);
+	}
+	main {
+		z-index: 1;
+		width: 100%; max-width: 440px; background: linear-gradient(180deg, var(--casca-clara), var(--casca) 30%, var(--casca-escura));
+		border-radius: 22px 22px 22px 60px; padding: 0 0 26px; position: relative;
+		box-shadow: 0 0 0 4px var(--tinta), 0 18px 40px rgba(0,0,0,.45), inset 0 -6px 0 rgba(0,0,0,.18);
+	}
+	/* topo da Pokédex: lente azul e três LEDs */
+	.topo { display: flex; align-items: center; gap: 14px; padding: 18px 20px 16px; border-bottom: 4px solid var(--tinta); position: relative; }
+	.topo::after { content: ''; position: absolute; left: 0; right: 0; bottom: -12px; height: 8px; background: var(--casca-escura); clip-path: polygon(0 0, 52% 0, 60% 100%, 100% 100%, 100% 0); opacity: .6; }
+	.lente { width: 62px; height: 62px; border-radius: 50%; flex: none; border: 5px solid #fff; box-shadow: 0 0 0 3px var(--tinta);
+		background: radial-gradient(circle at 34% 30%, #e6f6ff 0 12%, #7cc8ff 13% 30%, var(--lente) 31% 70%, #10558f 71%);
+		animation: brilho 3.2s ease-in-out infinite; }
+	.leds { display: flex; gap: 8px; align-self: flex-start; padding-top: 4px; }
+	.leds i { width: 13px; height: 13px; border-radius: 50%; box-shadow: 0 0 0 2px var(--tinta), inset -2px -2px 0 rgba(0,0,0,.25); display: block; }
+	.leds i:nth-child(1) { background: #ff4d4d; } .leds i:nth-child(2) { background: var(--amarelo); } .leds i:nth-child(3) { background: #4be35e; }
+	.marca { margin-left: auto; text-align: right; color: #fff; line-height: 1; }
+	.marca h1 { margin: 0; font-weight: 900; font-size: 26px; letter-spacing: .5px; text-shadow: 2px 2px 0 var(--tinta), -1px -1px 0 var(--tinta), 1px -1px 0 var(--tinta), -1px 1px 0 var(--tinta); }
+	.marca small { display: block; margin-top: 6px; font-family: 'Press Start 2P', monospace; font-size: 8px; letter-spacing: 1px; color: var(--amarelo); text-shadow: 1px 1px 0 var(--tinta); }
+	/* tela de LCD */
+	.moldura { margin: 26px 20px 0; background: #e9e4d7; border-radius: 10px 10px 10px 34px; padding: 14px 16px 12px; box-shadow: 0 0 0 4px var(--tinta), inset 0 -4px 0 rgba(0,0,0,.12); }
+	.moldura .pontos { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+	.moldura .pontos i { width: 7px; height: 7px; border-radius: 50%; background: var(--casca); box-shadow: 0 0 0 1.5px var(--tinta); display: block; }
+	.tela { background: var(--lcd); border-radius: 6px; padding: 16px 14px; min-height: 108px; box-shadow: 0 0 0 3px var(--tinta), inset 0 0 0 3px var(--lcd-medio);
+		background-image: repeating-linear-gradient(0deg, rgba(15,56,15,.08) 0 1px, transparent 1px 3px); }
+	.tela .linha { display: flex; align-items: center; gap: 8px; font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--lcd-medio); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
+	.luz { width: 10px; height: 10px; border-radius: 50%; background: var(--amarelo); box-shadow: 0 0 0 2px var(--lcd-escuro); animation: piscar 1s steps(2) infinite; }
+	body[data-estado="online"] .luz { background: #4be35e; animation: pulsar 1.6s ease-in-out infinite; }
+	body[data-estado="offline"] .luz { background: #ff4d4d; animation: none; }
+	body[data-estado="salvo"] .luz { background: var(--amarelo); animation: none; }
+	#estado { margin: 0; font-family: 'Press Start 2P', monospace; font-size: 12px; line-height: 1.75; color: var(--lcd-escuro); word-break: break-word; }
+	body[data-estado="buscando"] #estado::after { content: '▮'; margin-left: 4px; animation: piscar 1s steps(2) infinite; }
+	/* botões */
+	.acoes { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 20px 0; }
+	.botao { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 900; font-size: 17px; padding: 12px 20px 12px 14px;
+		border-radius: 999px; color: var(--tinta); background: var(--papel); box-shadow: 0 0 0 3px var(--tinta), 0 5px 0 var(--tinta); transition: transform .12s ease, box-shadow .12s ease; }
+	.botao:hover { transform: translateY(-2px); box-shadow: 0 0 0 3px var(--tinta), 0 7px 0 var(--tinta); }
+	.botao:active { transform: translateY(4px); box-shadow: 0 0 0 3px var(--tinta), 0 1px 0 var(--tinta); }
+	.botao:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--amarelo); outline-offset: 3px; }
 	.botao[hidden] { display: none; }
-	form { margin-top: 32px; padding-top: 20px; border-top: 1px solid #d5d9e0; }
-	label { display: block; font-size: 15px; margin-bottom: 8px; }
-	input { width: 100%; box-sizing: border-box; padding: 10px; font-size: 16px; border: 1px solid #b8bfcc; border-radius: 6px; margin-bottom: 12px; }
-	button { background: #1d2330; color: #fff; border: 0; padding: 10px 18px; border-radius: 6px; font-size: 16px; cursor: pointer; }
+	.bola { width: 24px; height: 24px; border-radius: 50%; flex: none; box-shadow: 0 0 0 2.5px var(--tinta);
+		background: radial-gradient(circle, #fff 0 3px, var(--tinta) 3px 5.5px, transparent 5.5px), linear-gradient(var(--casca) 0 45%, var(--tinta) 45% 55%, #fff 55%); }
+	#jogar { background: var(--amarelo); font-size: 19px; }
+	#jogar .bola { animation: balancar 1.8s ease-in-out infinite; }
+	#montar .bola { background: radial-gradient(circle, #fff 0 3px, var(--tinta) 3px 5.5px, transparent 5.5px), linear-gradient(var(--azul) 0 45%, var(--tinta) 45% 55%, #fff 55%); }
+	#salvo { font-size: 14px; }
+	/* formulário manual, como o painel de baixo da Pokédex */
+	form { margin: 26px 20px 0; padding: 16px; background: rgba(0,0,0,.18); border-radius: 12px; box-shadow: inset 0 0 0 3px rgba(0,0,0,.25); }
+	label { display: block; color: #fff; font-family: 'Press Start 2P', monospace; font-size: 9px; line-height: 1.6; margin-bottom: 10px; text-shadow: 1px 1px 0 var(--tinta); }
+	.campo { display: flex; gap: 10px; }
+	input { flex: 1; min-width: 0; padding: 11px 12px; font-size: 16px; font-family: inherit; font-weight: 700; border: 0; border-radius: 8px; background: var(--papel); color: var(--tinta); box-shadow: 0 0 0 3px var(--tinta); }
+	button { flex: none; background: var(--tinta); color: #fff; border: 0; padding: 11px 16px; border-radius: 8px; font-family: 'Press Start 2P', monospace; font-size: 10px; cursor: pointer; box-shadow: 0 4px 0 #000; }
+	button:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
+	.dica { margin: 18px 20px 0; color: rgba(255,255,255,.85); font-size: 13px; font-weight: 700; text-align: center; }
+	@keyframes piscar { 50% { opacity: 0; } }
+	@keyframes pulsar { 50% { box-shadow: 0 0 0 2px var(--lcd-escuro), 0 0 10px 3px #4be35e; } }
+	@keyframes brilho { 50% { box-shadow: 0 0 0 3px var(--tinta), 0 0 16px 4px rgba(124,200,255,.75); } }
+	@keyframes balancar { 0%, 60%, 100% { transform: rotate(0); } 70% { transform: rotate(-18deg); } 80% { transform: rotate(14deg); } 90% { transform: rotate(-8deg); } }
+	@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+	@media (max-width: 380px) { .marca h1 { font-size: 21px; } .lente { width: 52px; height: 52px; } #estado { font-size: 11px; } }
 </style>
 </head>
-<body>
+<body data-estado="buscando">
 <main>
-	<h1>MAMA League</h1>
-	<p id="estado">Procurando o servidor de hoje...</p>
-	<a id="jogar" class="botao" href="jogar.html" hidden>Jogar</a>
-	<a id="salvo" class="botao" href="#" hidden>Último servidor usado</a>
-	<a id="montar" class="botao" href="jogar.html?servidor=nenhum" hidden>Montar times</a>
+	<header class="topo">
+		<span class="lente" aria-hidden="true"></span>
+		<span class="leds" aria-hidden="true"><i></i><i></i><i></i></span>
+		<div class="marca"><h1>MAMA League</h1><small>Servidor do dia</small></div>
+	</header>
+	<section class="moldura" aria-live="polite">
+		<div class="pontos" aria-hidden="true"><i></i><i></i></div>
+		<div class="tela">
+			<div class="linha"><span class="luz" aria-hidden="true"></span>Status</div>
+			<p id="estado">Procurando o servidor de hoje...</p>
+		</div>
+	</section>
+	<div class="acoes">
+		<a id="jogar" class="botao" href="jogar.html" hidden><span class="bola" aria-hidden="true"></span><span class="texto">Jogar</span></a>
+		<a id="montar" class="botao" href="jogar.html?servidor=nenhum" hidden><span class="bola" aria-hidden="true"></span><span class="texto">Montar times</span></a>
+		<a id="salvo" class="botao" href="#" hidden><span class="texto">Último servidor usado</span></a>
+	</div>
 	<form id="manual">
 		<label for="endereco">Endereço do servidor de hoje</label>
-		<input id="endereco" type="text" autocomplete="off" placeholder="exemplo.trycloudflare.com" />
-		<button type="submit">Entrar</button>
+		<div class="campo">
+			<input id="endereco" type="text" autocomplete="off" placeholder="algo.trycloudflare.com" />
+			<button type="submit">Entrar</button>
+		</div>
 	</form>
+	<p class="dica">Seus times ficam salvos neste endereço.</p>
 </main>
 <script>
 /*__SITE_SERVIDOR__*/
@@ -78,13 +170,15 @@
 			agora: Date.now()
 		});
 		if (s.origem === 'salvo' && query !== 'nenhum') {
+			document.body.dataset.estado = 'salvo';
 			estado.textContent = 'Não consegui ver o anúncio agora. Último servidor usado: ' + s.host;
-			jogar.textContent = 'Tentar o último servidor';
+			jogar.querySelector('.texto').textContent = 'Tentar o último servidor';
 			jogar.href = 'jogar.html?servidor=' + encodeURIComponent(s.host);
 			jogar.hidden = false;
 			return;
 		}
 		if (query === 'nenhum' || !s.host) {
+			document.body.dataset.estado = 'offline';
 			estado.textContent = 'Nenhum servidor ligado agora';
 			montar.hidden = false;
 			var ultimo = window.MamaServidor.normalizarHost(salvo);
@@ -95,6 +189,7 @@
 			}
 			return;
 		}
+		document.body.dataset.estado = 'online';
 		if (s.origem === 'anuncio') {
 			estado.textContent = 'Servidor de hoje: ' + (s.quem || s.host) + ', ligado desde ' + hora(anuncio.desde);
 		} else {
