@@ -17,10 +17,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const VERSAO_CONFIG = 2;
+const VERSAO_CONFIG = 3;
 const CONFIG_PADRAO = {
 	versao: VERSAO_CONFIG,
-	planilha: '18PMXRITfBS4kxfLuz0JNOFZr3sudgCpFf2J7pki7Ai4',
+	planilha: '13y-oKjuTQcLbgdx5mFtMJF_rGiCtmao-UK9fVRpyX5M',
 	abas: { rebalanceamento: 'Rebalanceamento dos pokemons', moveset: 'Moveset dos pokemons', tms: 'TMs por Pokémon' },
 	nivel: 61,              // nível dos formatos "Nv." e Doubles (o mesmo da calculadora da liga)
 	terastal: false,
@@ -647,4 +647,16 @@ const EXCLUSIVAS = {
 `,
 };
 
-main().catch((e) => { console.error('\nErro:', e.message); process.exit(1); });
+// No Windows, recria o atalho "MAMA League" (Pokégear) na área de trabalho.
+// Fica aqui porque o atualizar.bat antigo roda esta versão nova do arquivo:
+// assim o atalho aparece já na primeira atualização.
+function criarAtalho() {
+	if (process.platform !== 'win32') return;
+	const fs = require('fs'), path = require('path');
+	const ps = [path.join(__dirname, '..', 'criar-atalho.ps1'), path.join(__dirname, 'criar-atalho.ps1')].find((f) => fs.existsSync(f));
+	if (!ps) return;
+	const r = require('child_process').spawnSync('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ps], { stdio: 'inherit' });
+	if (r.status !== 0) console.log('Não consegui criar o atalho MAMA League (use o iniciar.bat).');
+}
+
+main().then(criarAtalho).catch((e) => { console.error('\nErro:', e.message); process.exit(1); });
